@@ -24,7 +24,7 @@ relation_rightof = lambda i1, i2: i1 == i2 + 1
 relation_nextto = lambda i1, i2: abs(i1 - i2) == 1
 
 def add_combination(k1, v1, k2, v2, relation=relation_same):
-	return [(v1, i1, v2, i2) for i1 in indices for i2 in indices if not relation(i1, i2)]
+	return [(v1, i1, v2, i2, '') for i1 in indices for i2 in indices if not relation(i1, i2)]
 
 exclusions = []
 # what is known about the problem
@@ -35,8 +35,8 @@ exclusions += add_combination('Nationality', 'Ukrainian', 'Drink', 'Tea')
 exclusions += add_combination('Color', 'Green', 'Color', 'Ivory', relation=relation_rightof)
 exclusions += add_combination('Smoke', 'Old Gold', 'Pet', 'Snails')
 exclusions += add_combination('Smoke', 'Kools', 'Color', 'Yellow')
-exclusions += [('Milk', k) for k in [1, 2, 4, 5]]
-exclusions += [('Norwegian', k) for k in [2, 3, 4, 5]]
+exclusions += [('Milk', k, '') for k in [1, 2, 4, 5]]
+exclusions += [('Norwegian', k, '') for k in [2, 3, 4, 5]]
 exclusions += add_combination('Smoke', 'Chesterfield', 'Pet', 'Fox', relation=relation_nextto)
 exclusions += add_combination('Smoke', 'Kools', 'Pet', 'Horse', relation=relation_nextto)
 exclusions += add_combination('Smoke', 'Lucky Strike', 'Drink', 'Orange juice')
@@ -48,7 +48,7 @@ for catname, options in categories:
 	for i, value in enumerate(options):
 		for value2 in options[:i]:
 			for k in indices:
-				exclusions.append((value, k, value2, k))
+				exclusions.append((value, k, value2, k, 'mutex'))
 
 # run analysis and print solutions
 from zwicky import MorphologicalAnalysis

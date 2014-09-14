@@ -22,7 +22,9 @@ class MorphologicalAnalysis(object):
 	def __init__(self, board, exclusions):
 		relevant_exclusions = {}
 		for e in exclusions:
-			for k, v in zip(e[::2], e[1::2]):
+			assert len(e) % 2 == 1, ('Incorrect format for exclusion', e)
+			assert len(e) > 0, ('Exclusion is empty')
+			for k, v in zip(e[:-1:2], e[1:-1:2]):
 				l = relevant_exclusions.get(k, [])
 				l.append(e)
 				relevant_exclusions[k] = l
@@ -51,13 +53,13 @@ class MorphologicalAnalysis(object):
 			child[variablename] = o
 			for e in self.relevant_exclusions[variablename]:
 				exclusion_applies = 0
-				for k, v in zip(e[::2], e[1::2]):
+				for k, v in zip(e[:-1:2], e[1:-1:2]):
 					if k in child and child[k] == v:
 						#print 'criterion ', e, 'applies through', k, v
 						exclusion_applies += 1
 			
-				if exclusion_applies == len(e) / 2:
-					if len(e) > 2:
+				if exclusion_applies == (len(e) - 1) / 2:
+					if len(e) > 2 + 1:
 						if verbose: print '%s%s=%s REJECTED by ' % ('  '*depth, variablename, o), e
 					prohibited = True
 					break
