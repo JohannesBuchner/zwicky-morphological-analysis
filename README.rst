@@ -4,7 +4,7 @@ Generalised Morphological Analysis
 
 About
 -------
-This simple package implements `Morphological analysis <https://en.wikipedia.org/wiki/Morphological_analysis>`_.
+This simple package implements `Morphological analysis <https://en.wikipedia.org/wiki/Morphological_analysis_%28problem-solving%29>`_.
 Morphological analysis is the elimination of contradictory statements from a large space of possibilities by systematic search. This allows a clear view on the important effects.
 
 A good introduction is `this video <https://www.youtube.com/watch?v=x4zAniSP0FY>`_.
