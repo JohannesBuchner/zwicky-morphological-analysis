@@ -61,5 +61,16 @@ for sol in MorphologicalAnalysis(board, exclusions).search(verbose=False):
 			print '|%12s' % o,
 		print
 
+"""
+Output:
+-------
+SOLUTION:
+       Color |      Yellow |        Blue |         Red |       Ivory |       Green
+ Nationality |   Norwegian |   Ukrainian |  Englishman |    Spaniard |    Japanese
+       Drink |       Water |         Tea |        Milk |Orange juice |      Coffee
+       Smoke |       Kools |Chesterfield |    Old Gold |Lucky Strike |  Parliament
+         Pet |         Fox |       Horse |      Snails |         Dog |       Zebra
 
+
+"""
 
