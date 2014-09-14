@@ -1,5 +1,5 @@
 """
-Python Implementation of Zwickys Generalized Morphological analysis
+Python Implementation of Zwickys General Morphological analysis
 """
 class MorphologicalAnalysis(object):
 	"""

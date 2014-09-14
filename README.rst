@@ -1,5 +1,5 @@
 =====================================
-Generalised Morphological Analysis
+General Morphological Analysis
 =====================================
 
 About
