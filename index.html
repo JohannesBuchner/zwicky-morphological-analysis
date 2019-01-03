@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<title>Zwicky's Morphological Analysis online</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="index.css"  type='text/css' />
+<script type="text/javascript" src="jquery-3.3.1.js"></script>
+<script type="text/javascript">
+
+
+$(window).on('load', function () {
+
+ $(document).ready(function () {
+     $('#btnAdd').click(function () {
+         var count = 3,
+             first_row = $('#Row2');
+         while (count-- > 0) first_row.clone().appendTo('#blacklistgrid');
+     });
+
+     
+     var myform = $('#myform'),
+         iter = 0;
+     $('#btnAddCol').click(function () {
+         myform.find('tr').each(function(){
+           var trow = $(this);
+             if(trow.index() === 0){
+                 trow.append('<td>Col'+iter+'</td>');
+             }else{
+                 trow.append('<td><input type="checkbox" name="cb'+iter+'"/></td>');
+             }
+            
+         });
+         iter += 1;
+     });
+ });
+
+ });
+</script>
+
+</head>
+<h1>Zwicky's Morphological Analysis online</h1>
+
+<div>
+<h3>Step 1: Define</h3>
+</div>
+<form name="myform" id="myform">
+
+<table id="blacklistgrid">
+<thead>
+<tr id="Row1">
+<th><input></th>
+<th><input></th>
+<th><input></th>
+</tr>
+</thead>
+
+<tr id="Row2">
+<td><input></td>
+<td><input></td>
+<td><input></td>
+</tr>
+
+</table>
+
+    <button type="button" id="btnAdd">Add few more Rows!</button>
+    </br>
+    </br>
+    <button type="button" id="btnAddCol">Add new column</button>
+    </br>
+    </br>
+    <!--<input type="submit"></input>-->
+</form>
+
+</html>

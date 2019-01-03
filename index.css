@@ -1,0 +1,9 @@
+th {
+padding-bottom: 1em;
+}
+th input {
+font-weight: bold;
+}
+input.flat {
+border: 1px solid #666666;
+}
