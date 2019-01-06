@@ -16,12 +16,18 @@ Web implementation
 
 https://johannesbuchner.github.io/zwicky-morphological-analysis/
 
+Source code in gh-pages branch.
+
+Pull requests are welcome.
+
 Python implementation
 ----------------------
 
 This package is written in Python. It has no GUI.
 
 The code is a simple depth-first search with early truncation.
+
+Source code in master branch.
 
 Usage
 ----------
