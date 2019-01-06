@@ -9,9 +9,15 @@ Morphological analysis is the elimination of contradictory statements from a lar
 
 A good introduction is `this video <https://www.youtube.com/watch?v=x4zAniSP0FY>`_.
 
-Software
-----------
 Difference to their software are that this package allows specification of more complex exclusion criteria rather than just two mutually exclusive values. 
+
+Web implementation
+-------------------
+
+https://johannesbuchner.github.io/zwicky-morphological-analysis/
+
+Python implementation
+----------------------
 
 This package is written in Python. It has no GUI.
 
