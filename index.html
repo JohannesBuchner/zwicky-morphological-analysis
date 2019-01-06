@@ -5,71 +5,540 @@
 <title>Zwicky's Morphological Analysis online</title>
 <meta charset="utf-8" />
 <link rel="stylesheet" href="index.css"  type='text/css' />
-<script type="text/javascript" src="jquery-3.3.1.js"></script>
+<script type="text/javascript" src="jquery-3.3.1.min.js"></script>
 <script type="text/javascript">
+'use strict';
 
+var catnames = [];
+var catvalues = [];
+
+function listCombinations() {
+	var table = $('#combinations2');
+	table.find("tr").remove();
+	var dropdownA = $('#CatA');
+	var dropdownB = $('#CatB');
+	var indexA = dropdownA.prop("selectedIndex");
+	var indexB = dropdownB.prop("selectedIndex");
+	if (indexA == indexB)
+		return;
+	var valsA = catvalues[indexA];
+	var valsB = catvalues[indexB];
+	var html = "";
+	console.log("combining from options:" + valsA + " and " + valsB);
+	for(var i = 0; i < valsA.length; i++) {
+		for(var j = 0; j < valsB.length; j++) {
+			html += "<tr><td>" + valsA[i] + "</td>"
+			html += "<td>" + valsB[j] + "</td>"
+			html += "<td><button type='button' onClick=\"disallowCombination(this," + indexA + ",'" + valsA[i] + "',"  + indexB + ",'" + valsB[j] + "');\">Disallow</button></td></tr>"
+		}
+	}
+	table.append(html)
+}; 
+
+function disallowCombination(button, i, valA, j, valB) {
+	console.log("removing:" + i + "/" + valA + " , " + j + "/" + valB);
+	var reason = window.prompt("The combination:" + catnames[i] + "=" + valA + " and " + catnames[j] + "=" + valB + " is not allowed because ");
+	if (reason) {
+		var excludes = $('#excludes');
+		var line = "";
+		for(var k = 0; k < catnames.length; k++) {
+			if (k == i) {
+				line += " " + valA;
+			}
+			else if (k == j) {
+				line += " " + valB;
+			}
+			else {
+				line += " *";
+			}
+		}
+		console.log("trimming: " + line);
+		line = $.trim(line);
+		console.log("appending: " + line);
+		excludes.val(excludes.val() + line + " | " + reason + "\n");
+		console.log("setting button disallowed: " + button);
+		$(button).addClass("disallowed");
+	}
+};
+
+function appendSolution(resulttable, values) {
+	var html = "<tr>";
+	for(var i = 0; i < catnames.length; i++) {
+		html += "<td>" + values[i] + "</td>";
+	}
+	html += "</tr>";
+	resulttable.append(html);
+}
+function appendCutNote(resulttable, values, rule, reason) {
+	var html = "<tr>";
+	for(var i = 0; i < catnames.length; i++) {
+		html += "<td class='solutioncut'>" + values[i].join(" ") + "</td>";
+	}
+	html += "</tr>"
+	html += "<tr><td class='solutioncut solutioncutreason' colspan='" + catnames.length + "'>removed because:" + reason + "</td></tr>";
+	resulttable.append(html);
+}
+
+
+function countCombinations(allowedvalues) {
+	// cartesian product for cardinality
+	var ncomb = 1;
+	for(var i = 0; i < allowedvalues.length; i++) {
+		ncomb *= allowedvalues[i].length;
+	}
+	return ncomb;
+}
+
+function has_options(allowedvalues, excludes, resultstable = undefined) {
+	// go through excludes
+	// if excludes matches allowedvalues with the relevant fields only having one option
+	// return empty allowedvalues
+	for(var i = 0; i < excludes.length; i++) {
+		var rule_line = excludes[i];
+		if ($.trim(rule_line) == "")
+			continue;
+		if (rule_line.startsWith("#"))
+			continue;
+		var parts = rule_line.split("|", 2);
+		var rule = $.trim(parts[0]).split(" ");
+		if (rule.length != allowedvalues.length) {
+			console.log("invalid rule: '" + rule_line + "', because " +  rule.length + "!=" + allowedvalues.length);
+			continue;
+		}
+		//console.log("checking rule: '" + rule_line + "'");
+		var reason = $.trim(parts[1]);
+		var rule_applies = true;
+		for(var j = 0; j < allowedvalues.length; j++) {
+			if (rule[j] == "*")
+				continue;
+			if (allowedvalues[j].length > 1) {
+				rule_applies = false;
+				//console.log("rule does not apply yet, have other options");
+				break;
+			}
+			if (allowedvalues[j][0] == rule[j]) {
+				rule_applies = true;
+			} else {
+				rule_applies = false;
+				//console.log("rule does not match");
+				break;
+			}
+		}
+		if (rule_applies) {
+			if(resultstable) {
+				appendCutNote(resultstable, allowedvalues, rule, reason);
+			}
+			return false;
+		}
+	}
+	return true;
+}
+
+function indexOfMin(arr) {
+	if (arr.length === 0) {
+		return -1;
+	}
+
+	var minValue = arr[0];
+	var minIndex = 0;
+
+	for (var i = 1; i < arr.length; i++) {
+		if (isNaN(minValue) || arr[i] < minValue) {
+			minIndex = i;
+			minValue = arr[i];
+		}
+	}
+
+    return minIndex;
+}
+function sum(arr){
+	var total = 0;
+	for(var i = 0; i < arr.length; i++) 
+		total += arr[i];
+	return total;
+}
+
+function recursiveGenerateSolutions(resulttable, allowedvalues, excludes, depth) {
+	var prefix = "  ".repeat(depth);
+	console.log(prefix + "  generating solutions@" + depth + ": " + allowedvalues.join(";"));
+	if(depth>100){
+		console.log("stopping recursion at level 100");
+		return;
+	}
+	var single_solution = true;
+	for(var i = 0; i < allowedvalues.length; i++) {
+		if (allowedvalues[i].length != 1) {
+			single_solution = false;
+			break;
+		}
+	}
+	if(single_solution) {
+		console.log(prefix + "  emitting solution");
+		appendSolution(resulttable, allowedvalues);
+		return;
+	}
+	// go through each category
+	// find the one with the strongest reduction in options
+	var noptions_list = [];
+	var noptions = [];
+	for(var i = 0; i < catnames.length; i++) {
+		var newallowedvalues = allowedvalues.slice();
+		var noptions_here = [];
+		for(var j = 0; j < allowedvalues[i].length; j++) {
+			newallowedvalues[i] = [allowedvalues[i][j]];
+			if (has_options(newallowedvalues, excludes))
+				noptions_here.push(countCombinations(newallowedvalues));
+			else
+				noptions_here.push(0);
+		}
+		noptions_list.push(noptions_here);
+		if (allowedvalues[i].length == 1 || noptions_here == 0) {
+			// already have only one option, cannot select here;
+			noptions.push(NaN);
+		} else {
+			noptions.push(sum(noptions_here));
+		}
+	}
+	console.log(prefix + "  number of options: " + noptions + ", or, in detail:" + noptions_list.join("|"));
+	// select the one with lowest number of remaining options
+	var cat_selected = indexOfMin(noptions);
+
+	// order the choices within that category by the number of possibilities
+	
+	//for(var i = 0; i < catnames.length; i++) {
+	console.log(prefix + "  selecting on " + cat_selected + ": "  + catnames[cat_selected]);
+	var options = allowedvalues[cat_selected];
+	var options_indices = [];
+	for(var j = 0; j < options.length; j++) {
+		//console.log(prefix + "    noptions of " + options[j] + ": " + noptions_list[cat_selected][j]);
+		options_indices.push(j);
+	}
+	options_indices.sort(
+		function(a,b) {
+			var va = noptions_list[cat_selected][a];
+			var vb = noptions_list[cat_selected][b];
+			var r = va - vb;
+			//console.log(prefix + "    comparing " + va + " and " + vb + "->" + r);
+			return r;
+		}
+	);
+	for(var j = 0; j < options_indices.length; j++) {
+		var k = options_indices[j];
+		//console.log(prefix + "    ordered:" + k + " noptions of " + options[k] + ": " + noptions_list[cat_selected][k]);
+	}
+	var newallowedvalues = allowedvalues.slice();
+	for(var j = 0; j < options_indices.length; j++) {
+		var k = options_indices[j];
+		newallowedvalues[cat_selected] = [options[k]];
+		console.log(prefix + "  assuming: " + catnames[cat_selected] + "=" + options[k]);
+		if (has_options(newallowedvalues, excludes, resulttable)) {
+			recursiveGenerateSolutions(resulttable, newallowedvalues, excludes, depth+1);
+		}
+	}
+	//}
+}
+
+function generateSolutions() {
+	var resulttable = $('#resulttable');
+	var ncol = catnames.length;
+	var excludes = $("#excludes").val().split("\n");
+	// clear result table
+	resulttable.find("tr").remove();
+	// fill result table
+	var html = "<tr>";
+	for(var i = 0; i < catnames.length; i++) {
+		html += "<th>" + catnames[i] + "</td>";
+	}
+	html += "</tr>"
+	resulttable.append(html);
+	console.log("generating solutions...");
+	recursiveGenerateSolutions(resulttable, catvalues, excludes, 0);
+}
+
+function clear_inputs(fields) {
+	for(var i = 0; i < fields.length; i++) {
+		console.log("clearing " + fields[i]);
+		fields[i].value = "";
+	}
+}
+
+function decode_categories(categories) {
+	var table = $('#blacklistgrid');
+	var fields = table.find('input');
+	clear_inputs(fields);
+	for(var i = 0; i < categories.length; i++) {
+		var keyvals = categories[i].split(":");
+		if (keyvals.length != 2)
+			continue;
+		var key = keyvals[0];
+		var vals = keyvals[1];
+		if (fields.length < i*2+2) {
+			var first_row = $('#Row2');
+			var newrow = first_row.clone();
+			newrow.find("input").val("");
+			newrow.appendTo('#blacklistgrid');
+			Array.prototype.push.apply(fields, newrow.find("input"));
+		}
+		fields[i*2].value = key;
+		fields[i*2+1].value = vals;
+	}
+}
+
+function load_from_url() {
+	var hash = window.location.hash.substr(1);
+	console.log("loading data from url: " + hash);
+	var parts = hash.split("&");
+	for(var i = 0; i < parts.length; i++) {
+		var keyvals = parts[i].split("=");
+		if (keyvals.length != 2)
+			continue;
+		var key = keyvals[0];
+		var val = decodeURIComponent(keyvals[1]);
+		if (key == "cats") {
+			decode_categories(val.split(";"));
+		} else if (key == "excl") {
+			var excludes = $('#excludes');
+			excludes.val(val);
+		} else {
+			console.log("unexpected argument:" + key);
+		}
+	}
+}
+function generateUrl() {
+	var excludes = $('#excludes');
+	var excludes_text = encodeURIComponent(excludes.val());
+	console.log("excludes encoded to:" + excludes_text);
+	var table = $('#blacklistgrid');
+	var fields = table.find('input');
+	var categories = []
+	for(var i = 0; i < fields.length; i+=2) {
+		var key = fields[i].value;
+		var vals = fields[i+1].value;
+		var keyvals = key + ":" + vals;
+		categories.push(keyvals);
+	}
+	var categories_text = encodeURIComponent(categories.join(";"));
+	console.log("categories:" + categories + " encoded to:" + categories_text);
+	var url = "#cats=" + categories_text + "&excl=" + excludes_text;
+	return url;
+}
 
 $(window).on('load', function () {
 
- $(document).ready(function () {
-     $('#btnAdd').click(function () {
-         var count = 3,
-             first_row = $('#Row2');
-         while (count-- > 0) first_row.clone().appendTo('#blacklistgrid');
-     });
+	$(document).ready(function () {
+		$('#clear').click(function () {
+			var table = $('#blacklistgrid');
+			var fields = table.find('input');
+			clear_inputs(fields);
+			var excludes = $('#excludes');
+			excludes.val("");
+			$('#btnXLoad').click();
+		});
+		$('#example1').click(function () {
+			var table = $('#blacklistgrid');
+			var fields = table.find('input');
+			clear_inputs(fields);
+			fields[0].value = "Color"
+			fields[1].value = "red yellow green"
+			fields[2].value = "Shape"
+			fields[3].value = "circle square"
+			var excludes = $('#excludes');
+			excludes.val("red circle | error should look threatening\ngreen square | info should look friendly");
+			$('#btnXLoad').click();
+		});
 
-     
-     var myform = $('#myform'),
-         iter = 0;
-     $('#btnAddCol').click(function () {
-         myform.find('tr').each(function(){
-           var trow = $(this);
-             if(trow.index() === 0){
-                 trow.append('<td>Col'+iter+'</td>');
-             }else{
-                 trow.append('<td><input type="checkbox" name="cb'+iter+'"/></td>');
-             }
-            
-         });
-         iter += 1;
-     });
- });
+		$('#example2').click(function () {
+			var table = $('#blacklistgrid');
+			var fields = table.find('input');
+			clear_inputs(fields);
+			fields[0].value = "Color"
+			fields[1].value = "red yellow green"
+			fields[2].value = "Shape"
+			fields[3].value = "circle square"
+			fields[4].value = "Texture"
+			fields[5].value = "hard soft"
+			var exclusions = "green square * | squares are warning shapes\n"
+			exclusions += "* circle hard | ugly\n";
+			exclusions += "* squares soft | squares should be hard warnings\n";
+			var excludes = $('#excludes');
+			excludes.val(exclusions);
+			$('#btnXLoad').click();
+		});
+
+		$('#btnAdd').click(function () {
+			var count = 3;
+			var first_row = $('#Row2');
+			while (count-- > 0) {
+				var newrow = first_row.clone();
+				newrow.find("input").val("");
+				newrow.appendTo('#blacklistgrid');
+			}
+		});
+
+		 
+		$('#btnXLoad').click(function () {
+			var table = $('#blacklistgrid');
+			var dropdownA = $('#CatA');
+			var dropdownB = $('#CatB');
+			var iinput = 0;
+			dropdownA.find("option").remove();
+			dropdownB.find("option").remove();
+			
+			console.log("loading combinations ...");
+			catnames = [];
+			catvalues = [];
+			
+			table.find('input').each(function () {
+				console.log("  value " + iinput + " " + this.value);
+				if(iinput % 2 == 0) {
+					var val = this.value;
+					if (val == "")
+						return;
+					catnames.push(val);
+					var i = iinput/2;
+					var newopt = $("<option />").val(i).text(val);
+					dropdownA.append(newopt);
+					var newopt = $("<option />").val(i).text(val);
+					dropdownB.append(newopt);
+				} else {
+					var val = this.value;
+					catvalues.push(val.split(' '));
+				}
+				iinput++;
+			});
+			dropdownA.prop("selectedIndex", 0);
+			dropdownB.prop("selectedIndex", 1);
+			listCombinations();
+		});
+
+
+		$('#btnXPrev').click(function () {
+			var dropdownA = $('#CatA');
+			var dropdownB = $('#CatB');
+			var indexA = dropdownA.prop("selectedIndex");
+			var indexB = dropdownB.prop("selectedIndex");
+			console.log("A:" + indexA + " B:" + indexB);
+			if (indexA > 0) {
+				dropdownA.prop("selectedIndex", indexA - 1);
+				console.log("prev A");
+			}
+			if (indexB > 1) {
+				dropdownB.prop("selectedIndex", indexB - 1);
+				console.log("prev B");
+			}
+			listCombinations();
+		});
+
+		$('#btnXNext').click(function () {
+			var dropdownA = $('#CatA');
+			var dropdownB = $('#CatB');
+			var indexA = dropdownA.prop("selectedIndex");
+			var indexB = dropdownB.prop("selectedIndex");
+			console.log("A:" + indexA + " B:" + indexB);
+			if (indexA < dropdownA.children("option").length - 2) {
+				dropdownA.prop("selectedIndex", indexA + 1);
+				console.log("next A, " + dropdownA.length);
+			}
+			if (indexB < dropdownB.children("option").length - 1) {
+				dropdownB.prop("selectedIndex", indexB + 1);
+				console.log("next B, " + dropdownB.length);
+			}
+			listCombinations();
+		});
+
+		$('#CatA').change(listCombinations);
+		$('#CatB').change(listCombinations);
+		
+		$('#btnFinish').click(generateSolutions);
+		
+		$('#btnShareUrl').click(function () {
+			var url = generateUrl();
+			window.location.hash = url;
+			$('#shareurl').val(window.location.href);
+		});
+		
+		
+		load_from_url();
+		$('#btnXLoad').click();
+	});
 
  });
 </script>
 
 </head>
 <h1>Zwicky's Morphological Analysis online</h1>
-
-<div>
-<h3>Step 1: Define</h3>
-</div>
 <form name="myform" id="myform">
 
-<table id="blacklistgrid">
-<thead>
-<tr id="Row1">
-<th><input></th>
-<th><input></th>
-<th><input></th>
-</tr>
-</thead>
+<div class="step">
+<h3>Step 1: Define Categories</h3>
 
+<p>Insert category name and allowed values.</p>
+<p><a id="clear" class="fillexample">Clear</a> | <a id="example1" class="fillexample">Load example 1</a> | <a id="example2" class="fillexample">Load example 2</a></p>
+
+<table id="blacklistgrid">
+<tr id="Row1">
+<th>Category name</th><td>Values (space separated):</td>
+</tr>
 <tr id="Row2">
-<td><input></td>
-<td><input></td>
-<td><input></td>
+<th><input value="Color"/></th><td><input value="green blue red" /></td>
+</tr>
+<tr id="Row3">
+<th><input value="Shape"/></th><td><input value="circle square triangle"/></td>
+</tr>
+<tr id="Row4">
+<th><input /></th><td><input /></td>
+</tr>
+<tr id="Row5">
+<th><input /></th><td><input /></td>
+</tr>
+<tr id="Row6">
+<th><input /></th><td><input /></td>
 </tr>
 
 </table>
 
-    <button type="button" id="btnAdd">Add few more Rows!</button>
-    </br>
-    </br>
-    <button type="button" id="btnAddCol">Add new column</button>
-    </br>
-    </br>
-    <!--<input type="submit"></input>-->
+<button type="button" id="btnAdd">Add a few more</button>
+
+
+</div>
+
+<div class="step">
+<h3>Step 2: Exclude options</h3>
+
+<button type="button" id="btnXLoad" accesskey="L">Load specified categories</button>
+	
+<button type="button" id="btnXPrev">&laquo;</button>
+<select id="CatA" name="CatA"></select>
+<select id="CatB" name="CatB"></select>
+<button type="button" id="btnXNext">&raquo;</button>
+
+<table id="combinations2">
+</table>
+
+</div>
+
+<div class="step">
+<h3>Step 3: Complex excludes</h3>
+
+<textarea id="excludes" name="excludes" rows="12" cols="100" ></textarea>
+</div>
+
+<div class="step">
+<h3>Finish:</h3>
+
+<button type="button" id="btnFinish" accesskey="X">Explore solutions!</button>
+<button type="button" id="btnShareUrl">Share</button><input id="shareurl"></input>
+
+<div class="result">
+
+<table id="resulttable"></table>
+	
+</div>
+
+</div>
+
 </form>
+
+
 
 </html>

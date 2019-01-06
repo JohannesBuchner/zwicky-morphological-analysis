@@ -1,9 +1,38 @@
-th {
+thdfa {
 padding-bottom: 1em;
 }
-th input {
+th, th input {
 font-weight: bold;
+}
+table {
+  border-collapse: collapse;
 }
 input.flat {
 border: 1px solid #666666;
+}
+div.step {
+border: 2px solid #BBBBBB;
+padding: 1em;
+margin: 1em;
+}
+button.disallowed {
+background-color: #f44336;
+}
+a.fillexample {
+	color: red;
+	text-decoration: underline;
+}
+
+table {
+  margin: 2em;
+}
+
+table td, table th {
+  border: 1px solid black;
+  padding: 0.3em 1em;
+  margin: 0;
+}
+
+.solutioncut {
+  background-color: yellow;
 }
