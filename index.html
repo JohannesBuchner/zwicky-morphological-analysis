@@ -454,7 +454,10 @@ $(window).on('load', function () {
 		$('#btnShareUrl').click(function () {
 			var url = generateUrl();
 			window.location.hash = url;
-			$('#shareurl').val(window.location.href);
+			var fullurl = window.location.href;
+			var urltextfield = $('#shareurl')
+			urltextfield.val(fullurl);
+			urltextfield.select();
 		});
 		
 		
@@ -472,7 +475,12 @@ $(window).on('load', function () {
 <div class="step">
 <h3>Step 1: Define Categories</h3>
 
-<p>Insert category name and allowed values.</p>
+<p>Explanation: In morphological analysis, the problem dimensions are first specified. 
+These can be somewhat overlapping.
+Any impossible combinations are excluded in the next step.
+</p>
+
+<p>Insert category name and allowed values (space separated).</p>
 <p><a id="clear" class="fillexample">Clear</a> | <a id="example1" class="fillexample">Load example 1</a> | <a id="example2" class="fillexample">Load example 2</a></p>
 
 <table id="blacklistgrid">
@@ -505,8 +513,11 @@ $(window).on('load', function () {
 <div class="step">
 <h3>Step 2: Exclude options</h3>
 
-<button type="button" id="btnXLoad" accesskey="L">Load specified categories</button>
-	
+<p>Here, pairwise combinations can be considered and removed if they are impossible.
+For each such case, also give as a comment the reason.</p>
+
+<p><button type="button" id="btnXLoad" accesskey="L">Load specified categories</button> (needed whenever categories change)</p>
+
 <button type="button" id="btnXPrev">&laquo;</button>
 <select id="CatA" name="CatA"></select>
 <select id="CatB" name="CatB"></select>
@@ -520,14 +531,24 @@ $(window).on('load', function () {
 <div class="step">
 <h3>Step 3: Complex excludes</h3>
 
+<p>Here all the exclusions are listed. </p>
+
+<p>Syntax: space separated values for each category, * if any. The number of categories has to match the number of values.
+Reason is given after |</p>
+
 <textarea id="excludes" name="excludes" rows="12" cols="100" ></textarea>
 </div>
 
 <div class="step">
 <h3>Finish:</h3>
+<p>Generate all possible solutions of the problem. Here the problem is explored such 
+that the argument (exclusion) that removes the most possibilities is invoked first.</p>
 
-<button type="button" id="btnFinish" accesskey="X">Explore solutions!</button>
-<button type="button" id="btnShareUrl">Share</button><input id="shareurl"></input>
+<p>This can be very helpful for making a systematic argument, while being sure that all possibilities 
+have been systematically considered.</p>
+
+<button type="button" id="btnFinish" accesskey="X">Explore solutions!</button><br/>
+<button type="button" id="btnShareUrl">Generate URL to share</button><input id="shareurl"></input>
 
 <div class="result">
 
