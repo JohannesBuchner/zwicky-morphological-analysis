@@ -332,6 +332,7 @@ $(window).on('load', function () {
 			clear_inputs(fields);
 			var excludes = $('#excludes');
 			excludes.val("");
+			window.location.hash = "";
 			$('#btnXLoad').click();
 		});
 		$('#example1').click(function () {
@@ -471,24 +472,28 @@ $(window).on('load', function () {
 </head>
 <h1>Zwicky's Morphological Analysis online</h1>
 
-<a href="https://github.com/JohannesBuchner/zwicky-morphological-analysis/"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+<a href="https://github.com/JohannesBuchner/zwicky-morphological-analysis/"><img style="position: absolute; top: 0; right: 0; border: 0;" src="forkme_light_background.png" alt="Fork me on GitHub"></a>
 
 <form name="myform" id="myform">
 
 <div class="step">
-<h3>Step 1: Define Categories</h3>
+<h3>Step 1: Define Problem Space</h3>
 
 <p>Explanation: In morphological analysis, the problem dimensions are first specified. 
 These can be somewhat overlapping.
 Any impossible combinations are excluded in the next step.
 </p>
 
-<p>Insert category name and allowed values (space separated).</p>
-<p><a id="clear" class="fillexample">Clear</a> | <a id="example1" class="fillexample">Load example 1</a> | <a id="example2" class="fillexample">Load example 2</a></p>
+<p>Insert category name and allowed values (space seperated).</p>
+<p><a id="clear" class="fillexample">Clear</a> | 
+<a id="example1" class="fillexample">Load example 1</a> | 
+<a id="example2" class="fillexample">Load example 2</a> |
+<a id="example3" class="fillexample" href="https://johannesbuchner.github.io/zwicky-morphological-analysis/#cats=Plan%3Afull_plan%20specific_plan%20routine_specific%20routine_general%20alertplan%3BTraining%3Aco-op%20specific%20base%2Bregular%20base%3BPersonnel%3A11%2B%208-10%205-7%20%3C4%3BEquipment%3Aspecial%20base%20subbase%3BLeadershipLevel%3A4%203%202%201%3BResponseChem%3A80%2510m%2080%2530m%2050%2515m%2050%2530m%20None30m%3BResponseInfo%3A%3C5min%20%3C30min%20%3E30min%3BResponsePeople%3Amany30min%20some15min%20some30min%20None30min&excl=full_plan%20specific%20*%20*%20*%20*%20*%20*%20%7C%20Plan%20not%20completely%20trained%20for%0Afull_plan%20base%2Bregular%20*%20*%20*%20*%20*%20*%20%7C%20Plan%20not%20completely%20trained%20for%0Afull_plan%20base%20*%20*%20*%20*%20*%20*%20%7C%20Plan%20not%20completely%20trained%20for%0Aspecific_plan%20base%2Bregular%20*%20*%20*%20*%20*%20*%20%7C%20Plan%20not%20completely%20trained%20for%0Aspecific_plan%20base%20*%20*%20*%20*%20*%20*%20%7C%20Plan%20not%20completely%20trained%20for%0Aroutine_specific%20base%20*%20*%20*%20*%20*%20*%20%7C%20Plan%20not%20completely%20trained%20for%0Aroutine_general%20co-op%20*%20*%20*%20*%20*%20*%20%7C%20Training%20without%20plan%0Aalertplan%20co-op%20*%20*%20*%20*%20*%20*%20%7C%20Training%20without%20plan%0Aalertplan%20specific%20*%20*%20*%20*%20*%20*%20%7C%20Training%20without%20plan%0Afull_plan%20*%20*%20subbase%20*%20*%20*%20*%20%7C%20Equipment%20worse%20than%20plan%0Aspecific_plan%20*%20*%20subbase%20*%20*%20*%20*%20%7C%20Equipment%20worse%20than%20plan%0Aroutine_specific%20*%20*%20subbase%20*%20*%20*%20*%20%7C%20Equipment%20worse%20than%20plan%0Aroutine_general%20*%20*%20special%20*%20*%20*%20*%20%7C%20Plan%20worse%20than%20equipment%0Aalertplan%20*%20*%20special%20*%20*%20*%20*%20%7C%20Plan%20worse%20than%20equipment%0Afull_plan%20*%20*%20*%203%20*%20*%20*%20%7C%20e%0Afull_plan%20*%20*%20*%202%20*%20*%20*%20%7C%20e%0Afull_plan%20*%20*%20*%201%20*%20*%20*%20%7C%20e%0Aspecific_plan%20*%20*%20*%202%20*%20*%20*%20%7C%20e%0Aspecific_plan%20*%20*%20*%201%20*%20*%20*%20%7C%20e%0Aroutine_specific%20*%20*%20*%201%20*%20*%20*%20%7C%20e%0Aroutine_general%20*%20*%20*%20*%2080%2510m%20*%20*%20%7C%20Generic%20response%20is%20slow%2Fineffective%0Aroutine_general%20*%20*%20*%20*%2080%2530m%20*%20*%20%7C%20Generic%20response%20is%20slow%2Fineffective%0Aroutine_general%20*%20*%20*%20*%2050%2515m%20*%20*%20%7C%20Generic%20response%20is%20slow%2Fineffective%0Aalertplan%20*%20*%20*%20*%2080%2510m%20*%20*%20%7C%20Alert-only%20is%20ineffective%0Aalertplan%20*%20*%20*%20*%2080%2530m%20*%20*%20%7C%20Alert-only%20is%20ineffective%0Aalertplan%20*%20*%20*%20*%2050%2515m%20*%20*%20%7C%20Alert-only%20is%20ineffective%0Aalertplan%20*%20*%20*%20*%2050%2530m%20*%20*%20%7C%20Alert-only%20is%20ineffective%0Aroutine_specific%20*%20*%20*%20*%20*%20%3C5min%20*%20%7C%20Generic%20response%20is%20slow%0Aroutine_general%20*%20*%20*%20*%20*%20%3C5min%20*%20%7C%20Generic%20response%20is%20slow%0Aalertplan%20*%20*%20*%20*%20*%20%3C5min%20*%20%7C%20Alert-only%20is%20ineffective%0A*%20base%2Bregular%20*%20special%20*%20*%20*%20*%20%7C%20cannot%20use%20special%20equipment%20with%20generic%20training%0A*%20base%20*%20special%20*%20*%20*%20*%20%7C%20cannot%20use%20special%20equipment%20with%20generic%20training%0A*%20base%2Bregular%20*%20*%20*%2080%2510m%20*%20*%20%7C%20generic%20training%20leads%20to%20slow%20response%0A*%20base%2Bregular%20*%20*%20*%2080%2530m%20*%20*%20%7C%20generic%20training%20leads%20to%20slow%20response%0A*%20base%2Bregular%20*%20*%20*%2050%2515m%20*%20*%20%7C%20generic%20training%20leads%20to%20slow%20response%0A*%20base%20*%20*%20*%2080%2510m%20*%20*%20%7C%20generic%20training%20leads%20to%20slow%20response%0A*%20base%20*%20*%20*%2080%2530m%20*%20*%20%7C%20generic%20training%20leads%20to%20slow%20response%0A*%20base%20*%20*%20*%2050%2515m%20*%20*%20%7C%20generic%20training%20leads%20to%20slow%20response%0A*%20*%2011%2B%20*%202%20*%20*%20*%20%7C%20h%0A*%20*%2011%2B%20*%201%20*%20*%20*%20%7C%20h%0A*%20*%208-10%20*%204%20*%20*%20*%20%7C%20number%20unavailable%0A*%20*%205-7%20*%204%20*%20*%20*%20%7C%20number%20unavailable%0A*%20*%205-7%20*%203%20*%20*%20*%20%7C%20number%20unavailable%0A*%20*%20%3C4%20*%204%20*%20*%20*%20%7C%20number%20unavailable%0A*%20*%20%3C4%20*%203%20*%20*%20*%20%7C%20number%20unavailable%0A*%20*%20%3C4%20*%202%20*%20*%20*%20%7C%20number%20unavailable%0A*%20*%20%3C4%20*%20*%2080%2510m%20*%20*%20%7C%20insufficient%20manpower%0A*%20*%20%3C4%20*%20*%2080%2530m%20*%20*%20%7C%20insufficient%20manpower%0A*%20*%20%3C4%20*%20*%2050%2515m%20*%20*%20%7C%20insufficient%20manpower%0A*%20*%20%3C4%20*%20*%2050%2530m%20*%20*%20%7C%20insufficient%20manpower%0A*%20*%20*%20base%20*%2080%2510m%20*%20*%20%7C%20generic%20equipment%20does%20not%20allow%20fast%20response%0A*%20*%20*%20base%20*%2080%2530m%20*%20*%20%7C%20generic%20equipment%20does%20not%20allow%20complete%20response%0A*%20*%20*%20subbase%20*%2080%2510m%20*%20*%20%7C%20poor%20equipment%20does%20not%20allow%20complete%20response%0A*%20*%20*%20subbase%20*%2080%2530m%20*%20*%20%7C%20poor%20equipment%20does%20not%20allow%20complete%20response%0A*%20*%20*%20subbase%20*%2050%2515m%20*%20*%20%7C%20poor%20equipment%20does%20not%20allow%20fast%20response%0A">Load example from video</a>
+</p>
 
 <table id="blacklistgrid">
 <tr id="Row1">
-<th>Category name</th><td>Values (space separated):</td>
+<th>Category name</th><th>Values (space seperated)</th>
 </tr>
 <tr id="Row2">
 <th><input value="Color"/></th><td><input value="green blue red" /></td>
@@ -543,12 +548,12 @@ Reason is given after |</p>
 </div>
 
 <div class="step">
-<h3>Finish:</h3>
+<h3>Explore Solution space:</h3>
 <p>Generate all possible solutions of the problem. Here the problem is explored such 
 that the argument (exclusion) that removes the most possibilities is invoked first.</p>
 
 <p>This can be very helpful for making a systematic argument, while being sure that all possibilities 
-have been systematically considered.</p>
+have been considered.</p>
 
 <button type="button" id="btnFinish" accesskey="X">Explore solutions!</button><br/>
 <button type="button" id="btnShareUrl">Generate URL to share</button><input id="shareurl"></input>
