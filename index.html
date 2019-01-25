@@ -253,6 +253,7 @@ function generateSolutions() {
 	resulttable.append(html);
 	console.log("generating solutions...");
 	recursiveGenerateSolutions(resulttable, catvalues, excludes, 0);
+	$("#nsolutions").html("" + (resulttable.find("tr").find("td:first").not('.solutioncut').length) + " solutions");
 }
 
 function clear_inputs(fields) {
@@ -555,7 +556,7 @@ that the argument (exclusion) that removes the most possibilities is invoked fir
 <p>This can be very helpful for making a systematic argument, while being sure that all possibilities 
 have been considered.</p>
 
-<button type="button" id="btnFinish" accesskey="X">Explore solutions!</button><br/>
+<button type="button" id="btnFinish" accesskey="X">Explore solutions!</button> <span id='nsolutions'></span><br/>
 <button type="button" id="btnShareUrl">Generate URL to share</button><input id="shareurl"></input>
 
 <div class="result">
