@@ -34,3 +34,9 @@ Usage
 See zebra.py for an example. There, the `Zebra puzzle <https://en.wikipedia.org/wiki/Zebra_Puzzle>`_ is implemented and solved.
 
 
+Related software
+------------------
+
+* http://www.swemorph.com/
+* https://github.com/sgrubsmyon/morphr
+
